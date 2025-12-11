@@ -14,13 +14,10 @@ GF-2 imagery can be obtained through China's official data portals, such as:
 China Resource Satellite Data and Application Center (CRESDA);
 Land Observation Satellite Data Service System (LOS-DSS)
 
-Translated with DeepL.com (free version)
-
 ## Repository Contents
 RF_probability_batch.js        # Parcel-level cultivation probability modeling
 LandTrendr_abandonment.js      # LandTrendr fitting and abandonment detection
-data_template/
-    └── obj_image_list_example.csv   # Example of asset naming structure
+data_template/obj_image_list_example.csv   # Example of asset naming structure
 README.md
 
 ## Scripts Description
