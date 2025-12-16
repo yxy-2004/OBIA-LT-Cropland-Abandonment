@@ -1,3 +1,25 @@
+/************************************************************
+ * OBIA-LT Cropland Abandonment Monitoring
+ * 
+ * Script: RF_probability_batch.js
+ * 
+ * Description:
+ * Object-based Random Forest modeling for parcel-level
+ * cultivation probability estimation using Sentinel-2 imagery.
+ *
+ * This script is part of the reproducible workflow described in:
+ * "Remote Sensing Monitoring of Cropland Abandonment at the Parcel Level
+ * Based on Time-Series Fitting of Cultivation Probability Values"
+ *
+ * Requirements:
+ * - Google Earth Engine account
+ * - Parcel boundary vector uploaded as an asset
+ * - Sentinel-2 SR imagery (COPERNICUS/S2_SR_HARMONIZED)
+ *
+ * Author: Xinyu Yang
+ * License: MIT
+ ************************************************************/
+
 // ===============================================================
 // Object-based Random Forest planting probability mapping
 // (Batch processing version for time-series analysis)
@@ -181,3 +203,4 @@ var classifyAndExport = function (imageName) {
 // -----------------------------------------------------------------------------
 
 imageNames.forEach(classifyAndExport);
+
