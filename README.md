@@ -5,6 +5,39 @@ This repository contains the essential Google Earth Engine (GEE) scripts used fo
 3.Detection of long-term probability decline indicating cropland abandonment
 These codes constitute the minimal reproducible set that supports the workflow presented in the study:“Remote Sensing Monitoring of Cropland Abandonment at the Parcel Level Based on Time-Series Fitting of Cultivation Probability Values.”
 
+## Workflow of the OBIA-LT Method
+flowchart TD
+    A[Multi-temporal remote sensing data
+Sentinel-2, GF-2, DEM, cropland boundary]
+
+    B[Object-based image segmentation (OBIA)
+SNIC superpixels
+MMU ≥ 400 m²]
+
+    C[Parcel-level feature extraction
+Spectral, index, texture, terrain features]
+
+    D[Cultivation probability modeling
+Random Forest (probability mode)
+Monthly cultivation probability]
+
+    E[Parcel-level probability time series
+Object-based temporal signal]
+
+    F[LandTrendr-based temporal segmentation
+Input: cultivation probability
+Focus on sustained decline]
+
+    G[Abandonment decision rules
+Probability threshold
+Minimum duration constraint
+No recovery detected]
+
+    H[Parcel-level abandonment map
+Status, onset time, duration]
+
+    A --> B --> C --> D --> E --> F --> G --> H
+
 ## Data Sources
 ·Open-Access Data (Required)
 Sentinel-2 Level-2A (COPERNICUS/S2_SR_HARMONIZED)
@@ -17,12 +50,14 @@ Land Observation Satellite Data Service System (LOS-DSS)
 ## Repository Contents
 RF_probability_batch.js        # Parcel-level cultivation probability modeling
 LandTrendr_abandonment.js      # LandTrendr fitting and abandonment detection
-data_template/obj_image_list_example.csv   # Example of asset naming structure
+data_template/
+ └── obj_image_list_example.csv   # Example of asset naming structure
 README.md
 
 ## Scripts Description
 (1) RF_probability_batch.js
-Performs Random Forest–based cultivation probability estimation on segmented parcels.Functions include:
+Performs Random Forest–based cultivation probability estimation on segmented parcels.
+Functions include:
 ·Feature generation from Sentinel-2 composites
 ·Object-based sample extraction
 ·RF model training in probability mode
@@ -61,3 +96,7 @@ Open-source under the MIT License.
 Xinyu Yang
 College of Geography and Tourism, Anhui Normal University
 Email: 1944551771@qq.com
+
+
+
+
