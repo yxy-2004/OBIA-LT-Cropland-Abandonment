@@ -1,30 +1,35 @@
-/***************************************************************
- * LandTrendr-based Cropland Abandonment Detection (Template)
- * -----------------------------------------------------------
- * Author: Xinyu Yang
- * Repository: https://github.com/your_repo
+/************************************************************
+ * OBIA-LT Cropland Abandonment Monitoring
+ *
+ * Script: LandTrendr_abandonment.js
+ *
  * Description:
- *   This public version contains placeholder dataset IDs and 
- *   provides a minimal, reproducible workflow for LandTrendr-
- *   based abandonment detection. Users must replace the input 
- *   ImageCollection with their own time-series data.
- ***************************************************************/
-
+ * LandTrendr-based temporal segmentation of parcel-level
+ * cultivation probability trajectories for cropland abandonment detection.
+ *
+ * This script implements the abandonment detection component
+ * described in:
+ * "Remote Sensing Monitoring of Cropland Abandonment at the Parcel Level
+ * Based on Time-Series Fitting of Cultivation Probability Values"
+ *
+ * Requirements:
+ * - Google Earth Engine account
+ * - Monthly parcel-level cultivation probability images
+ *   (exported from RF_probability_batch.js)
+ *
+ * Author: Xinyu Yang
+ * License: MIT
+ ************************************************************/
 
 /***************************************
  * 1. Load Time-Series Input Imagery   *
  ***************************************/
 
-// Placeholder image asset IDs (users must replace with real paths)
+// User-defined monthly parcel-level cultivation probability images
+// Each image must contain band 'b1' representing cultivation probability
 var imageIds = [
-  'users/your_username/template_2023_10',
-  'users/your_username/template_2023_11',
-  'users/your_username/template_2023_12',
-  'users/your_username/template_2024_01',
-  'users/your_username/template_2024_02',
-  'users/your_username/template_2024_03',
-  'users/your_username/template_2024_04',
-  'users/your_username/template_2024_05'
+  // e.g. 'projects/ee-yourname/assets/S2_Ob_2023_10_probability',
+  //      'projects/ee-yourname/assets/S2_Ob_2023_11_probability'
 ];
 
 // Build an ImageCollection (assumes probability in band 'b1')
@@ -38,12 +43,12 @@ var collection = ee.ImageCollection(
  ***************************************/
 
 var ltParams = {
-  maxSegments: 6,
-  spikeThreshold: 0.9,
-  vertexCountOvershoot: 3,
-  preventOneYearRecovery: true,
-  recoveryThreshold: 0.5,
-  pvalThreshold: 0.05,
+  maxSegments: 5,
+  spikeThreshold: 0.8,
+  vertexCountOvershoot: 2,
+  preventOneYearRecovery: false,
+  recoveryThreshold: 0.2,
+  pvalThreshold: 0.1,
   bestModelProportion: 0.75,
   minObservationsNeeded: 6
 };
@@ -69,12 +74,14 @@ var ltResult = ee.Algorithms.TemporalSegmentation.LandTrendr({
 var ltArray = ltResult.select('LandTrendr');
 var fitted = ltArray.arrayFlatten([['fitted']]);   // Extract fitted curve
 
-
 /******************************************************
- * 4. Abandonment Detection (Generic Rule Template)   *
+ * 4. Cropland Abandonment Detection Logic
  ******************************************************/
 
-// Example rule (replace with your own research logic):
+// Abandonment is identified based on significant and persistent
+// declines in parcel-level cultivation probability trajectories
+// fitted by the LandTrendr algorithm.
+
 //   "A significant drop (>0.35) followed by non-recovery"
 // Compute difference between consecutive fitted points
 var diff = fitted.arraySlice(0, 0, -1)
@@ -83,7 +90,10 @@ var diff = fitted.arraySlice(0, 0, -1)
 // Drop threshold
 var dropMask = diff.lt(-0.35);
 
-// Collapse to single band (pixel abandoned if any drop occurs)
+// A parcel is flagged as abandoned if at least one
+// significant probability decline is detected in the
+// fitted LandTrendr trajectory.
+// (Users may modify this rule based on specific research needs.)
 var abandoned = dropMask.arrayReduce(
   ee.Reducer.anyNonZero(), [0]
 ).rename('abandoned');
@@ -93,10 +103,10 @@ var abandoned = dropMask.arrayReduce(
  * 5. Visualization (Simple Template)  *
  ***************************************/
 
-// Example region (placeholder polygon)
-var region = ee.Geometry.Polygon(
-  [[[115.0, 29.0], [116.0, 29.0], [116.0, 30.0], [115.0, 30.0]]]
-);
+// Example visualization region (not used in analysis)
+// Study area boundary (user-defined FeatureCollection or Geometry)
+var roi = ee.FeatureCollection('USER_DEFINED_ROI_ASSET');
+var region = roi.geometry();
 
 Map.centerObject(region, 10);
 Map.addLayer(
@@ -110,7 +120,6 @@ Map.addLayer(
  * 6. Export Template (Optional, Disabled) *
  *******************************************/
 
-// Uncomment if users want to export results:
 // Export.image.toDrive({
 //   image: abandoned,
 //   description: 'abandonment_result_example',
@@ -121,3 +130,4 @@ Map.addLayer(
 
 
 /**************** END OF SCRIPT ****************/
+
