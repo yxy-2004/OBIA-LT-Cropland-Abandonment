@@ -28,10 +28,12 @@ var bandsForClassification = [
 
 // -----------------------------------------------------------------------------
 // 3. Training samples (binary planting label)
+// ybd_202408: user-provided training samples (FeatureCollection)
+// Attributes: gridcode (parcel ID), reference planting label
 // -----------------------------------------------------------------------------
 var samples = ybd_202408.map(function (feature) {
   var gridcode = ee.Number(feature.get('gridcode'));
-  var zhongzhi = gridcode.lte(2); // Cultivated = 1, Non-cultivated = 0
+  var zhongzhi = gridcode.lte(2); // Cultivated = 1, Non-cultivated = 0, gridcode <= 2 indicates cultivated parcels based on field survey coding 
   return feature.set({
     'zhongzhi': zhongzhi,
     'gridcode': gridcode
@@ -115,7 +117,7 @@ var classifyAndExport = function (imageName) {
     });
 
   var classifier = ee.Classifier.smileRandomForest({
-    numberOfTrees: 150,
+    numberOfTrees: 300,
     seed: 42
   })
     .setOutputMode('PROBABILITY')
@@ -161,10 +163,10 @@ var classifyAndExport = function (imageName) {
 
   Export.image.toDrive({
     image: exportImage,
-    description: imageName + '_planting_probability',
+    description: imageName + '_parcel_probability_RF',
     folder: 'GEE_Exports',
-    fileNamePrefix: imageName + '_planting_probability',
-    region: roi,
+    fileNamePrefix: imageName + '_parcel_probability_RF',
+    region: roi,// roi: study area boundary (ee.Geometry or FeatureCollection)
     scale: 10,
     maxPixels: 1e13,
     fileFormat: 'GeoTIFF',
@@ -177,4 +179,5 @@ var classifyAndExport = function (imageName) {
 // -----------------------------------------------------------------------------
 // 7. Batch execution
 // -----------------------------------------------------------------------------
+
 imageNames.forEach(classifyAndExport);
