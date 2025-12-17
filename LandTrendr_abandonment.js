@@ -28,10 +28,32 @@
 // User-defined monthly parcel-level cultivation probability images
 // Each image must contain band 'b1' representing cultivation probability
 var imageIds = [
-  // e.g. 'projects/ee-yourname/assets/S2_Ob_2023_10_probability',
-  //      'projects/ee-yourname/assets/S2_Ob_2023_11_probability'
+  'S2_Ob_2023_01_probability_',
+  'S2_Ob_2023_02_probability_',
+  'S2_Ob_2023_03_probability_',
+  'S2_Ob_2023_04_probability_',
+  'S2_Ob_2023_05_probability_',
+  'S2_Ob_2023_06_probability_',
+  'S2_Ob_2023_07_probability_',
+  'S2_Ob_2023_08_probability_',
+  'S2_Ob_2023_09_probability_',
+  'S2_Ob_2023_10_probability_',
+  'S2_Ob_2023_11_probability_',
+  'S2_Ob_2023_12_probability_',
+  'S2_Ob_2024_01_probability_',
+  'S2_Ob_2024_02_probability_',
+  'S2_Ob_2024_03_probability_',
+  'S2_Ob_2024_04_probability_',
+  'S2_Ob_2024_05_probability_',
+  'S2_Ob_2024_06_probability_',
+  'S2_Ob_2024_07_probability_',
+  'S2_Ob_2024_08_probability_',
+  'S2_Ob_2024_09_probability_',
+  'S2_Ob_2024_10_probability_',
+  'S2_Ob_2024_11_probability_',
+  'S2_Ob_2024_12_probability_',
 ];
-
+imageName + '_parcel_probability_RF
 // Build an ImageCollection (assumes probability in band 'b1')
 var collection = ee.ImageCollection(
   imageIds.map(function(id) { return ee.Image(id); })
@@ -130,4 +152,5 @@ Map.addLayer(
 
 
 /**************** END OF SCRIPT ****************/
+
 
