@@ -9,15 +9,15 @@ These codes constitute the minimal reproducible set that supports the workflow p
 
 ```mermaid
 flowchart TD
-    A[Multi-temporal remote sensing data: Sentinel-2 GF-2 DEM cropland boundary]
-    B[Object-based image segmentation using OBIA]
-    C[SNIC superpixels MMU >= 400 m2]
-    D[Parcel-level feature extraction: spectral index texture terrain]
-    E[Random Forest cultivation probability modeling]
-    F[Parcel-level probability time series: object-based signal]
-    G[LandTrendr temporal segmentation: focus on sustained decline]
-    H[Abandonment decision rules: threshold minimum duration no recovery]
-    I[Parcel-level abandonment map: status onset duration]
+    A[1. Multi-temporal remote sensing data: Sentinel-2 GF-2 DEM cropland boundary]
+    B[2. Object-based image segmentation using OBIA]
+    C[3. SNIC superpixels MMU >= 400 m2]
+    D[4. Parcel-level feature extraction: spectral index texture terrain]
+    E[5. Random Forest cultivation probability modeling]
+    F[6. Parcel-level probability time series: object-based signal]
+    G[7. LandTrendr temporal segmentation: focus on sustained decline]
+    H[8. Abandonment decision rules: threshold minimum duration no recovery]
+    I[9. Parcel-level abandonment map: status onset duration]
 
     A --> B --> C --> D --> E --> F --> G --> H --> I
 ```
