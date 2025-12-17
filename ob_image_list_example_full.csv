@@ -1,0 +1,25 @@
+obj_image_name,exported_probability_name,season,year,month,notes
+S2_Ob_2023_01,S2_Ob_2023_01_probability_RF,Winter,2023,1,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_02,S2_Ob_2023_02_probability_RF,Winter,2023,2,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_03,S2_Ob_2023_03_probability_RF,Winter,2023,3,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_04,S2_Ob_2023_04_probability_RF,Winter,2023,4,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_05,S2_Ob_2023_05_probability_RF,Winter,2023,5,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_06,S2_Ob_2023_06_probability_RF,Summer,2023,6,For LandTrendr input; Use summer crop samples
+S2_Ob_2023_07,S2_Ob_2023_07_probability_RF,Summer,2023,7,For LandTrendr input; Use summer crop samples
+S2_Ob_2023_08,S2_Ob_2023_08_probability_RF,Summer,2023,8,For LandTrendr input; Use summer crop samples
+S2_Ob_2023_09,S2_Ob_2023_09_probability_RF,Summer,2023,9,For LandTrendr input; Use summer crop samples
+S2_Ob_2023_10,S2_Ob_2023_10_probability_RF,Summer,2023,10,For LandTrendr input; Use summer crop samples
+S2_Ob_2023_11,S2_Ob_2023_11_probability_RF,Winter,2023,11,For LandTrendr input; Use winter crop samples
+S2_Ob_2023_12,S2_Ob_2023_12_probability_RF,Winter,2023,12,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_01,S2_Ob_2024_01_probability_RF,Winter,2024,1,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_02,S2_Ob_2024_02_probability_RF,Winter,2024,2,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_03,S2_Ob_2024_03_probability_RF,Winter,2024,3,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_04,S2_Ob_2024_04_probability_RF,Winter,2024,4,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_05,S2_Ob_2024_05_probability_RF,Winter,2024,5,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_06,S2_Ob_2024_06_probability_RF,Summer,2024,6,For LandTrendr input; Use summer crop samples
+S2_Ob_2024_07,S2_Ob_2024_07_probability_RF,Summer,2024,7,For LandTrendr input; Use summer crop samples
+S2_Ob_2024_08,S2_Ob_2024_08_probability_RF,Summer,2024,8,For LandTrendr input; Use summer crop samples
+S2_Ob_2024_09,S2_Ob_2024_09_probability_RF,Summer,2024,9,For LandTrendr input; Use summer crop samples
+S2_Ob_2024_10,S2_Ob_2024_10_probability_RF,Summer,2024,10,For LandTrendr input; Use summer crop samples
+S2_Ob_2024_11,S2_Ob_2024_11_probability_RF,Winter,2024,11,For LandTrendr input; Use winter crop samples
+S2_Ob_2024_12,S2_Ob_2024_12_probability_RF,Winter,2024,12,For LandTrendr input; Use winter crop samples
