@@ -36,8 +36,7 @@ Land Observation Satellite Data Service System (LOS-DSS)
 ## Repository Contents
 RF_probability_batch.js        # Parcel-level cultivation probability modeling
 LandTrendr_abandonment.js      # LandTrendr fitting and abandonment detection
-data_template/
- └── obj_image_list_example.csv   # Example of asset naming structure
+ob_image_list_example_full.csv.csv   # Example of asset naming structure
 README.md
 
 ## Scripts Description
