@@ -38,6 +38,7 @@ var imageNames = [
 
 // -----------------------------------------------------------------------------
 // 2. Feature set used for probability modeling
+//All object-level spectral, index, and texture features were pre-computed and stored in the S2_Ob_YYYY_MM assets.
 // -----------------------------------------------------------------------------
 var bandsForClassification = [
   'B3', 'B4', 'nir_min', 'red_median', 'Rapeseed_Index', 
@@ -203,4 +204,5 @@ var classifyAndExport = function (imageName) {
 // -----------------------------------------------------------------------------
 
 imageNames.forEach(classifyAndExport);
+
 
