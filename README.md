@@ -60,20 +60,22 @@ README.md
 
 ## Scripts Description
 (1) RF_probability_batch.js
-Performs Random Forest–based cultivation probability estimation on segmented parcels.
+Performs Random Forest–based cultivation probability estimation on segmented parcels using **precomputed object-level features** from Sentinel-2 imagery.  
 Functions include:
-·Feature generation from Sentinel-2 composites
-·Object-based sample extraction
+·Object-level sample extraction
 ·RF model training in probability mode
 ·Batch prediction across multiple months
 ·Export of parcel-level probability maps
- note: Seasonal Sample Usage
-For RF classification, two sets of training samples were used to account for seasonal differences in crops:
-- **Summer crop samples (`ybd_202408`)**: used for June–October images (June-October)
-- **Winter crop samples (`ybd_202404`)**: used for the remaining months (January–May, November–December)
-The classification workflow and model parameters remain identical for both seasonal datasets.
-Output:
-{YYYY_MM}_probability_RF.tif
+
+Note: Seasonal Sample Usage 
+To account for seasonal differences in crop types, two separate training sample sets are used:
+- **Summer crop samples (`ybd_202408`)**: used for June–October images (2023 and 2024)  
+- **Winter crop samples (`ybd_202404`)**: used for the remaining months (January–May, November–December)  
+The classification workflow and model parameters are identical for both seasonal datasets.  
+All features used for classification are **precomputed at the object (parcel) level** and stored in the object-level images. No additional feature computation (NDVI, EVI, texture, etc.) is performed in this script.
+Output:  
+{YYYY_MM}_probability_RF.tif 
+
 (2) LandTrendr_abandonment.js
 Implements LandTrendr fitting on the multi-month probability series.Functions include:
 ·Time-series preparation
