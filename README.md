@@ -9,36 +9,17 @@ These codes constitute the minimal reproducible set that supports the workflow p
 
 ```mermaid
 flowchart TD
-    A[Multi-temporal remote sensing data
-Sentinel-2, GF-2, DEM, cropland boundary]
+    A[Multi-temporal remote sensing data: Sentinel-2 GF-2 DEM cropland boundary]
+    B[Object-based image segmentation using OBIA]
+    C[SNIC superpixels MMU >= 400 m2]
+    D[Parcel-level feature extraction: spectral index texture terrain]
+    E[Random Forest cultivation probability modeling]
+    F[Parcel-level probability time series: object-based signal]
+    G[LandTrendr temporal segmentation: focus on sustained decline]
+    H[Abandonment decision rules: threshold minimum duration no recovery]
+    I[Parcel-level abandonment map: status onset duration]
 
-    B[Object-based image segmentation (OBIA)
-SNIC superpixels
-MMU ≥ 400 m²]
-
-    C[Parcel-level feature extraction
-Spectral, index, texture, terrain features]
-
-    D[Cultivation probability modeling
-Random Forest (probability mode)
-Monthly cultivation probability]
-
-    E[Parcel-level probability time series
-Object-based temporal signal]
-
-    F[LandTrendr-based temporal segmentation
-Input: cultivation probability
-Focus on sustained decline]
-
-    G[Abandonment decision rules
-Probability threshold
-Minimum duration constraint
-No recovery detected]
-
-    H[Parcel-level abandonment map
-Status, onset time, duration]
-
-    A --> B --> C --> D --> E --> F --> G --> H
+    A --> B --> C --> D --> E --> F --> G --> H --> I
 ```
 
 ## Data Sources
@@ -70,7 +51,7 @@ Functions include:
 
 Note: Seasonal Sample Usage 
 To account for seasonal differences in crop types, two separate training sample sets are used:
-- **Summer crop samples (`ybd_202408`)**: used for June–October images (2023 and 2024)  
+- **Summer crop samples (`ybd_202408`)**: used for June–October images   
 - **Winter crop samples (`ybd_202404`)**: used for the remaining months (January–May, November–December)  
 The classification workflow and model parameters are identical for both seasonal datasets.  
 All features used for classification are **precomputed at the object (parcel) level** and stored in the object-level images. No additional feature computation (NDVI, EVI, texture, etc.) is performed in this script.
