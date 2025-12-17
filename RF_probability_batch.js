@@ -51,8 +51,10 @@ var bandsForClassification = [
 
 // -----------------------------------------------------------------------------
 // 3. Training samples (binary planting label)
-// ybd_202408: user-provided training samples (FeatureCollection)
-// Attributes: gridcode (parcel ID), reference planting label
+// Two sets of samples are used for different crop seasons:
+// - Summer crops ("ybd_202408") for June–October images
+// - Winter crops ("ybd_202404") for remaining months
+// This distinction accounts for spectral differences between summer and winter crops.
 // -----------------------------------------------------------------------------
 var samples = ybd_202408.map(function (feature) {
   var gridcode = ee.Number(feature.get('gridcode'));
@@ -204,6 +206,7 @@ var classifyAndExport = function (imageName) {
 // -----------------------------------------------------------------------------
 
 imageNames.forEach(classifyAndExport);
+
 
 
 
