@@ -5,41 +5,36 @@
  * 
  * Description:
  * Object-based Random Forest modeling for parcel-level
- * cultivation probability estimation using Sentinel-2 imagery.
+ * cultivation probability estimation using precomputed object-level
+ * features from Sentinel-2 imagery.
  *
- * This script is part of the reproducible workflow described in:
- * "Remote Sensing Monitoring of Cropland Abandonment at the Parcel Level
- * Based on Time-Series Fitting of Cultivation Probability Values"
- *
- * Requirements:
- * - Google Earth Engine account
- * - Parcel boundary vector uploaded as an asset
- * - Sentinel-2 SR imagery (COPERNICUS/S2_SR_HARMONIZED)
+ * Notes:
+ * - Two separate training sample sets are used to account for seasonal
+ *   differences in crop types:
+ *   1. Summer crops: ybd_202408 (used for June–October images)
+ *   2. Winter crops: ybd_202404 (used for remaining months)
+ * - Features used for classification are precomputed per parcel and stored
+ *   in object-level images; no additional feature computation is performed here.
+ * - The workflow is identical for both seasonal datasets.
  *
  * Author: Xinyu Yang
  * License: MIT
  ************************************************************/
 
-// ===============================================================
-// Object-based Random Forest planting probability mapping
-// (Batch processing version for time-series analysis)
-// ===============================================================
-
 // -----------------------------------------------------------------------------
 // 1. List of object-level Sentinel-2 images
 // -----------------------------------------------------------------------------
 var imageNames = [
-  'S2_Ob_2023_06',
-  'S2_Ob_2023_07',
-  'S2_Ob_2023_08',
-  'S2_Ob_2023_09',
-  'S2_Ob_2023_10'
+  'S2_Ob_2023_01','S2_Ob_2023_02','S2_Ob_2023_03','S2_Ob_2023_04',
+  'S2_Ob_2023_05''S2_Ob_2023_06','S2_Ob_2023_07','S2_Ob_2023_08','S2_Ob_2023_09','S2_Ob_2023_10',
+  'S2_Ob_2023_11','S2_Ob_2023_12','S2_Ob_2024_01','S2_Ob_2024_02','S2_Ob_2024_03','S2_Ob_2024_04',
+  'S2_Ob_2024_05','S2_Ob_2024_06','S2_Ob_2024_07','S2_Ob_2024_08','S2_Ob_2024_09','S2_Ob_2024_10',
+  'S2_Ob_2024_11','S2_Ob_2024_12'
 ];
 
-// -----------------------------------------------------------------------------
-// 2. Feature set used for probability modeling
-//(All object-level spectral, index, and texture features were pre-computed and stored in the S2_Ob_YYYY_MM assets)
-// -----------------------------------------------------------------------------
+// ===============================================================
+// 2. Feature set for RF classification (precomputed in object-level images)
+// ===============================================================
 var bandsForClassification = [
   'B3', 'B4', 'nir_min', 'red_median', 'Rapeseed_Index', 
   'red_mean', 'red_max', 'NDVI_min', 'MSAVI_min', 'B2',
@@ -49,90 +44,25 @@ var bandsForClassification = [
   'EVI', 'NDVI_mean', 'B3_savg', 'NDVI', 'MSAVI_mean'
 ];
 
-// -----------------------------------------------------------------------------
-// 3. Training samples (binary planting label)
-// Two sets of samples are used for different crop seasons:
-// - Summer crops ("ybd_202408") for June–October images
-// - Winter crops ("ybd_202404") for remaining months
-// This distinction accounts for spectral differences between summer and winter crops.
-// -----------------------------------------------------------------------------
-var samples = ybd_202408.map(function (feature) {
-  var gridcode = ee.Number(feature.get('gridcode'));
-  var zhongzhi = gridcode.lte(2); // Cultivated = 1, Non-cultivated = 0, gridcode <= 2 indicates cultivated parcels based on field survey coding 
-  return feature.set({
-    'zhongzhi': zhongzhi,
-    'gridcode': gridcode
-  });
-});
-
-// -----------------------------------------------------------------------------
-// 4. Auxiliary topographic data
-// -----------------------------------------------------------------------------
-var dem = ee.Image('USGS/SRTMGL1_003').float();
-var slope = ee.Terrain.slope(dem).float();
-
-// -----------------------------------------------------------------------------
-// 5. Split samples into training and validation subsets
-// (used only for model stability, not for accuracy reporting)
-// -----------------------------------------------------------------------------
-var split = samples.randomColumn('random', 42);
-var trainingSamples = split.filter(ee.Filter.lt('random', 0.7));
-
-// -----------------------------------------------------------------------------
-// 6. Core function: probability mapping and export
-// -----------------------------------------------------------------------------
-var classifyAndExport = function (imageName) {
+// ===============================================================
+// 3. Core function: probability mapping and export
+// ===============================================================
+var classifyAndExport = function(imageName, sampleCollection) {
 
   print('Processing image:', imageName);
 
-  // Load object-level image
+  // ---------------- Load object-level image ----------------
+  // Each image contains precomputed parcel-level features
   var image = ee.Image('projects/ee-yxyxy/assets/' + imageName).float();
 
-  // ---------------- Feature construction ----------------
+  // ---------------- Split training/validation samples ----------------
+  // Used only for model stability, not accuracy reporting
+  var split = sampleCollection.randomColumn('random', 42);
+  var trainingSamples = split.filter(ee.Filter.lt('random', 0.7));
 
-  // Spectral bands
-  var baseBands = image.select(['B2', 'B3', 'B4', 'B8']);
-
-  // Vegetation indices
-  var ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI').float();
-  var evi = image.expression(
-    '2.5 * (NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1)', {
-      'NIR': image.select('B8'),
-      'RED': image.select('B4'),
-      'BLUE': image.select('B2')
-    }).rename('EVI').float();
-  var ndwi = image.normalizedDifference(['B3', 'B8']).rename('NDWI').float();
-
-  // Texture features (GLCM)
-  var gray = image.select('B3')
-    .add(image.select('B8'))
-    .divide(2)
-    .multiply(100)
-    .round()
-    .toInt16();
-
-  var glcm = gray.glcmTexture({
-    size: 3,
-    kernel: ee.Kernel.square(1)
-  });
-
-  var texture = glcm
-    .select(['B3_contrast', 'B3_var'])
-    .rename(['B3_contrast', 'B3_var'])
-    .float();
-
-  // Merge all features
-  var imageWithFeatures = baseBands
-    .addBands(ndvi)
-    .addBands(evi)
-    .addBands(ndwi)
-    .addBands(dem.rename('elevation'))
-    .addBands(slope.rename('slope'))
-    .addBands(texture);
-
-  // ---------------- Model training ----------------
-
-  var trainingData = imageWithFeatures
+  // ---------------- Sample features for training ----------------
+  // Using only precomputed features; no additional computation
+  var trainingData = image
     .select(bandsForClassification)
     .sampleRegions({
       collection: trainingSamples,
@@ -141,6 +71,7 @@ var classifyAndExport = function (imageName) {
       tileScale: 4
     });
 
+  // ---------------- Train Random Forest classifier ----------------
   var classifier = ee.Classifier.smileRandomForest({
     numberOfTrees: 300,
     seed: 42
@@ -152,17 +83,15 @@ var classifyAndExport = function (imageName) {
       inputProperties: bandsForClassification
     });
 
-  // ---------------- Probability prediction ----------------
-
-  var probabilityImage = imageWithFeatures
+  // ---------------- Predict planting probability ----------------
+  var probabilityImage = image
     .select(bandsForClassification)
     .classify(classifier, 'planting_probability')
     .select('planting_probability')
     .float();
 
-  // ---------------- Gridcode band (object ID) ----------------
-
-  var gridcodeBand = trainingSamples
+  // ---------------- Add Gridcode band (parcel ID) ----------------
+  var gridcodeBand = sampleCollection
     .reduceToImage({
       properties: ['gridcode'],
       reducer: ee.Reducer.first()
@@ -170,44 +99,51 @@ var classifyAndExport = function (imageName) {
     .rename('gridcode')
     .float();
 
-  // ---------------- Export ----------------
-
-  var validMask = image.select(['B2', 'B3', 'B4']).reduce(ee.Reducer.allNonZero());
+  // ---------------- Mask invalid pixels ----------------
+  // Ensure B2, B3, B4 are non-zero
+  var validMask = image.select(['B2','B3','B4']).reduce(ee.Reducer.allNonZero());
 
   var exportImage = ee.Image.cat([
     probabilityImage,
-    image.select(['B4', 'B3', 'B2']).float(),
+    image.select(['B4','B3','B2']).float(),
     gridcodeBand
   ])
     .updateMask(validMask)
-    .rename([
-      'planting_probability',
-      'B4', 'B3', 'B2',
-      'gridcode'
-    ]);
+    .rename(['planting_probability','B4','B3','B2','gridcode']);
 
+  // ---------------- Export to Google Drive ----------------
   Export.image.toDrive({
     image: exportImage,
     description: imageName + '_probability_RF',
     folder: 'GEE_Exports',
     fileNamePrefix: imageName + '_probability_RF',
-    region: roi,// roi: study area boundary (ee.Geometry or FeatureCollection)
+    region: roi, // roi: study area boundary
     scale: 10,
     maxPixels: 1e13,
     fileFormat: 'GeoTIFF',
-    formatOptions: {
-      cloudOptimized: true
-    }
+    formatOptions: { cloudOptimized: true }
   });
 };
 
-// -----------------------------------------------------------------------------
-// 7. Batch execution
-// -----------------------------------------------------------------------------
+// ===============================================================
+// 4. Batch execution with seasonal sample distinction
+// ===============================================================
 
-imageNames.forEach(classifyAndExport);
+// Summer months: June–October (both 2023 and 2024)
+var summerMonths = ['2023_06','2023_07','2023_08','2023_09','2023_10',
+                    '2024_06','2024_07','2024_08','2024_09','2024_10'];
 
+// Apply summer crop samples (ybd_202408)
+summerMonths.forEach(function(m){
+  classifyAndExport('S2_Ob_' + m, ybd_202408);
+});
 
+// Winter months: remaining months
+var winterMonths = imageNames.filter(function(m){
+  return summerMonths.indexOf(m.split('_')[1] + '_' + m.split('_')[2]) === -1;
+});
 
-
-
+// Apply winter crop samples (ybd_202404)
+winterMonths.forEach(function(m){
+  classifyAndExport('S2_Ob_' + m, ybd_202404);
+});
