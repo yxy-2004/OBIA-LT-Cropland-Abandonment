@@ -186,9 +186,9 @@ var classifyAndExport = function (imageName) {
 
   Export.image.toDrive({
     image: exportImage,
-    description: imageName + '_parcel_probability_RF',
+    description: imageName + '_probability_RF',
     folder: 'GEE_Exports',
-    fileNamePrefix: imageName + '_parcel_probability_RF',
+    fileNamePrefix: imageName + '_probability_RF',
     region: roi,// roi: study area boundary (ee.Geometry or FeatureCollection)
     scale: 10,
     maxPixels: 1e13,
@@ -204,6 +204,7 @@ var classifyAndExport = function (imageName) {
 // -----------------------------------------------------------------------------
 
 imageNames.forEach(classifyAndExport);
+
 
 
 
