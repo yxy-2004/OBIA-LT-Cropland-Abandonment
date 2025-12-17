@@ -67,8 +67,13 @@ Functions include:
 ·RF model training in probability mode
 ·Batch prediction across multiple months
 ·Export of parcel-level probability maps
+ note: Seasonal Sample Usage
+For RF classification, two sets of training samples were used to account for seasonal differences in crops:
+- **Summer crop samples (`ybd_202408`)**: used for June–October images (June-October)
+- **Winter crop samples (`ybd_202404`)**: used for the remaining months (January–May, November–December)
+The classification workflow and model parameters remain identical for both seasonal datasets.
 Output:
-{YYYY_MM}_parcel_probability_RF.tif
+{YYYY_MM}_probability_RF.tif
 (2) LandTrendr_abandonment.js
 Implements LandTrendr fitting on the multi-month probability series.Functions include:
 ·Time-series preparation
