@@ -6,6 +6,8 @@ This repository contains the essential Google Earth Engine (GEE) scripts used fo
 These codes constitute the minimal reproducible set that supports the workflow presented in the study:“Remote Sensing Monitoring of Cropland Abandonment at the Parcel Level Based on Time-Series Fitting of Cultivation Probability Values.”
 
 ## Workflow of the OBIA-LT Method
+
+
 flowchart TD
     A[Multi-temporal remote sensing data
 Sentinel-2, GF-2, DEM, cropland boundary]
@@ -41,6 +43,8 @@ Status, onset time, duration]
 ## Data Sources
 ·Open-Access Data (Required)
 Sentinel-2 Level-2A (COPERNICUS/S2_SR_HARMONIZED)
+·DEM
+SRTM DEM (USGS/SRTMGL1_003)
 ·Parcel Boundaries (User-provided)
 The GF-2 data used in this study is solely for farmland parcel delineation and is not required when running scripts from this repository. Any polygon dataset representing farmland parcels may be substituted.
 GF-2 imagery can be obtained through China's official data portals, such as:
@@ -64,7 +68,7 @@ Functions include:
 ·Batch prediction across multiple months
 ·Export of parcel-level probability maps
 Output:
-{YYYY_MM}_planting_probability.tif
+{YYYY_MM}_parcel_probability_RF.tif
 (2) LandTrendr_abandonment.js
 Implements LandTrendr fitting on the multi-month probability series.Functions include:
 ·Time-series preparation
@@ -88,6 +92,12 @@ Steps:
 (3)Run RF_probability_batch.js to obtain monthly probability maps
 (4)Run LandTrendr_abandonment.js to detect abandonment
 This completes the reproducible pipeline.
+
+Data Availability Statement
+
+The Sentinel-2 imagery used in this study is publicly available through the Google Earth Engine data catalog.
+Due to data-use restrictions and privacy considerations, the parcel boundary data and training samples are not publicly shared.
+However, the complete analysis workflow, model implementation, and parameter settings are fully documented and openly available in this repository, enabling reproducibility using equivalent input data.
 
 ## License
 Open-source under the MIT License.
