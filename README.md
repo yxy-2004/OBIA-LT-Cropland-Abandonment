@@ -7,7 +7,7 @@ These codes constitute the minimal reproducible set that supports the workflow p
 
 ## Workflow of the OBIA-LT Method
 
-
+```mermaid
 flowchart TD
     A[Multi-temporal remote sensing data
 Sentinel-2, GF-2, DEM, cropland boundary]
@@ -39,6 +39,7 @@ No recovery detected]
 Status, onset time, duration]
 
     A --> B --> C --> D --> E --> F --> G --> H
+```
 
 ## Data Sources
 ·Open-Access Data (Required)
